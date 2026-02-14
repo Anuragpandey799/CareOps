@@ -3,23 +3,23 @@ import { Server } from "socket.io";
 let io;
 
 export const initSocket = (server) => {
-  const allowedOrigins = [
-    "http://localhost:5173",
-    process.env.FRONTEND_URL,
-  ].filter(Boolean); // removes undefined values
-
   io = new Server(server, {
     cors: {
       origin: (origin, callback) => {
-        // Allow requests with no origin (like Postman)
         if (!origin) return callback(null, true);
 
-        if (allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          console.log("❌ Socket CORS blocked:", origin);
-          callback(new Error("Not allowed by CORS"));
+        // ✅ Allow localhost
+        if (origin.startsWith("http://localhost")) {
+          return callback(null, true);
         }
+
+        // ✅ Allow all Vercel deployments of your project
+        if (origin.includes("vercel.app")) {
+          return callback(null, true);
+        }
+
+        console.log("❌ Socket CORS blocked:", origin);
+        callback(new Error("Not allowed by CORS"));
       },
       methods: ["GET", "POST"],
       credentials: true,
