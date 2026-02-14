@@ -1,10 +1,6 @@
 import { io } from "socket.io-client";
 
-const socketURL = import.meta.env.PROD
-  ? import.meta.env.VITE_SOCKET_URL_PROD
-  : import.meta.env.VITE_SOCKET_URL;
-
-const socket = io(socketURL, {
+const socket = io(import.meta.env.VITE_SOCKET_URL, {
   withCredentials: true,
 });
 
