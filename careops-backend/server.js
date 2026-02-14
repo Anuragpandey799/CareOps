@@ -26,12 +26,28 @@ const server = http.createServer(app);
 // ✅ Initialize socket from modular file
 initSocket(server);
 
-app.use(cors(
-  {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173/",
+
+// cors
+const allowedOrigins = [
+  "http://localhost:5173", // local frontend
+  process.env.FRONTEND_URL, // production frontend (Vercel)
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // allow requests with no origin (like Postman)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
-  }
-));
+  })
+);
 app.use(express.json());
 
 // Routes
