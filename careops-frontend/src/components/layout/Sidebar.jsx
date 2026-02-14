@@ -20,12 +20,21 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
   if (!user) return null;
 
-  const toggleSidebar = () => setIsOpen(!isOpen);
+  const toggleSidebar = () => setIsOpen((prev) => !prev);
 
   // Auto close on route change (mobile)
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname, setIsOpen]);
+
+  // Prevent body scroll when mobile sidebar is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [isOpen]);
 
   const navItems = [
     { to: "/", icon: <Home size={20} />, label: "Home" },
@@ -44,7 +53,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         className="md:hidden fixed top-4 left-4 z-[60] bg-indigo-600 p-2 rounded-xl text-white shadow-lg"
         onClick={toggleSidebar}
       >
-        <Menu size={20} />
+        {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
       {/* Mobile Overlay */}
@@ -72,25 +81,23 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-slate-800">
           <h2
-            className={`text-lg font-bold transition-all duration-300 ${
-              isHovered ? "opacity-100" : "opacity-0"
+            className={`text-lg font-bold text-white transition-all duration-300 ${
+              isHovered || isOpen ? "opacity-100" : "opacity-0 md:opacity-0"
             }`}
           >
             CareOps
           </h2>
-
-          <button
-            className="md:hidden text-slate-400 hover:text-white"
-            onClick={toggleSidebar}
-          >
-            <X size={20} />
-          </button>
         </div>
 
         {/* Navigation */}
         <nav className="flex flex-col gap-2 p-3 mt-4 overflow-y-auto">
           {navItems.map((item) => (
-            <NavItem key={item.to} {...item} isHovered={isHovered} />
+            <NavItem
+              key={item.to}
+              {...item}
+              isHovered={isHovered}
+              isOpen={isOpen}
+            />
           ))}
         </nav>
       </aside>
@@ -98,7 +105,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
   );
 };
 
-const NavItem = ({ to, icon, label, isHovered }) => {
+const NavItem = ({ to, icon, label, isHovered, isOpen }) => {
   return (
     <NavLink
       to={to}
@@ -110,20 +117,21 @@ const NavItem = ({ to, icon, label, isHovered }) => {
         }`
       }
     >
-      <div className="flex items-center justify-center w-6">
-        {icon}
-      </div>
+      <div className="flex items-center justify-center w-6">{icon}</div>
 
+      {/* Label */}
       <span
         className={`whitespace-nowrap transition-all duration-300 ${
-          isHovered ? "opacity-100 ml-2" : "opacity-0 w-0 ml-0"
+          isHovered || isOpen
+            ? "opacity-100 ml-2"
+            : "opacity-0 w-0 ml-0"
         }`}
       >
         {label}
       </span>
 
-      {/* Tooltip */}
-      {!isHovered && (
+      {/* Tooltip (only when collapsed on desktop) */}
+      {!isHovered && !isOpen && (
         <span className="absolute left-16 bg-slate-800 text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none">
           {label}
         </span>

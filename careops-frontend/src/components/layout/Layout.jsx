@@ -26,7 +26,7 @@ const Layout = ({ children }) => {
         <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
         {/* Content */}
-        <main className="flex-1 pt-20 px-4 md:px-8 lg:px-10 transition-all duration-300">
+        <main className="flex-1 pt-20 px-4 ml-5 md:ml-20 md:px-8 lg:px-10 transition-all duration-300">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>

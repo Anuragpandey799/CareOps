@@ -42,7 +42,6 @@ app.use("/api/dashboard", dashboardRoutes);
 
 
 
-
 app.get("/", (req, res) => {
   res.send("CareOps Backend is Running 🚀 with WebSockets");
 });
